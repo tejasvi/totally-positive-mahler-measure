@@ -1,0 +1,14 @@
+TPMahler.K.tpMain has type TPMahler.TpMain: true
+TPMahler.K.tpOmega has type TPMahler.TpOmega: true
+TPMahler.K.tpLimitPoint has type TPMahler.TpLimitPoint: true
+TPMahler.K.expM0Gt has type TPMahler.ExpM0Gt: true
+TPMahler.K.corReal has type TPMahler.CorReal: true
+TPMahler.K.corRealDec has type TPMahler.CorRealDec: true
+TPMahler.K.corRealOmega has type TPMahler.CorRealOmega: true
+'TPMahler.K.tpMain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TPMahler.K.tpOmega' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TPMahler.K.tpLimitPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TPMahler.K.expM0Gt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TPMahler.K.corReal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TPMahler.K.corRealDec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TPMahler.K.corRealOmega' depends on axioms: [propext, Classical.choice, Quot.sound]

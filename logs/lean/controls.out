@@ -1,0 +1,8 @@
+OK  first interval: expected true, got true
+OK  first interval widened to [2^-30, 1]: expected false, got false
+OK  last interval, ending at 21: expected true, got true
+OK  last interval, end point moved by 2^-64/10^10: expected false, got false
+OK  left tail (0, 2^-30]: expected true, got true
+OK  left tail claimed on (0, 1/2]: expected false, got false
+OK  right tail [21, oo): expected true, got true
+OK  weights: expected true, got true
