@@ -1,10 +1,10 @@
 # A lower bound for the smallest limit point of the absolute Mahler measure of totally positive algebraic integers
 
-This repository contains the certificate, the two programs that check it, tests of these programs, the programs that
-produced the certificate, and a proof in Lean 4 of the lower bounds of the main theorem and of its corollary for
-totally real numbers, for the paper of the same title by Tejasvi Singh Tomar (Zenodo,
-[doi:10.5281/zenodo.23548807](https://doi.org/10.5281/zenodo.23548807)). The repository is archived in the record
-[doi:10.5281/zenodo.23548808](https://doi.org/10.5281/zenodo.23548808).
+This repository accompanies the paper of the same title by Tejasvi Singh Tomar (Zenodo,
+[doi:10.5281/zenodo.23715956](https://doi.org/10.5281/zenodo.23715956)) and is archived in the record
+[doi:10.5281/zenodo.23715959](https://doi.org/10.5281/zenodo.23715959). It holds the certificate, the programs that
+check it and produced it, and a Lean proof. *Repository layout* at the end lists the directories. This is version 4 (see
+*Versions*).
 
 ## The result
 
@@ -34,8 +34,8 @@ have Weil height h(β) > 0.2721673.
    The inequality F ≥ 0 forces Σ_j c_j deg Q_j + 2λ ≤ 1, and this absorbs the leading coefficients, so the bound holds
    for algebraic numbers, not only for integers.
 2. **Certificate.** Nineteen polynomials with exact rational weights: x and eighteen polynomials of Flammang's table.
-   The measure ν is ρ/s, where ρ has a continuous piecewise linear density G on 5473 rational nodes in [0, 11.2] with
-   rational values, s = ρ(ℝ), and λ = s. The potential and the energy of ρ have closed forms.
+   The measure ν is ρ/s, where ρ has a continuous piecewise linear density G with rational values on 5473 rational
+   nodes in [0, 11.2], s = ρ(ℝ), and λ = s. The potential and the energy of ρ have closed forms.
    `certificate/FORMAT.md` describes the file and what the checkers verify.
 3. **Verification.** Two programs, written separately (see *Checking the certificate*), verify F ≥ 0 on (0, ∞) in ball
    arithmetic, and the strict inequality Σ_j c_j deg Q_j + 2s < 1 as an exact comparison of rationals.
@@ -58,18 +58,29 @@ where `NPROC` is the number of worker processes. A check succeeds if the program
     VERIFIED: log lambda+ >= m = 19152077587359311629/35184372088832000000 = 0.5443347842; Omega >= 1.7234615  (474s)
     INDEPENDENT VERDICT: VERIFIED log lambda+ >= 19152077587359311629/35184372088832000000 0.5443347841764794
 
-The proved bound is the fraction. The decimals in these lines are rounded to the nearest digit shown, and lambda+
-stands for ℓ₊.
+In these lines lambda+ stands for ℓ₊ and the decimals are rounded to the nearest digit shown; the proved bound is the
+fraction.
 
-`check_certificate.py` uses 200-bit balls. It evaluates the potential and the energy by the closed forms of Lemma 3.1 of
-the paper, encloses each root of the polynomials in a window, and uses a chord bound with a rigorous upper bound for F''
-on the intervals between windows and nodes. `check_independent.py` was written from an earlier formulation of Lemma 2.2
-and from the format description, which also gives the closed forms of Lemma 3.1 and the tail bounds of the first
-checker. It was written without access to the first checker and shares no code with it. It uses 128-bit balls (192 bits
-for the energy), evaluates the potential piece by piece, and bounds F by second-order Taylor expansions at the midpoints
-of intervals. On a 96-thread x86-64 server, `check_certificate.py` took 474 seconds with 64 processes and
-`check_independent.py` took 18 seconds with 32 processes. The second program needs fewer interval checks, 8,424 versus
-28,408. The output of both runs is in `logs/`, and `logs/RUNS.md` records how we produced the logs.
+`check_certificate.py` uses 200-bit balls. It treats the tails (0, 1/1000] and [881, ∞) separately, where its lower
+bounds for F exceed 0.790 and 0.3866, respectively. It evaluates the potential and the energy by the closed forms of
+Lemma 3.1 of the paper, encloses each root of the polynomials in a window, and uses a chord bound with a rigorous upper
+bound for F'' on the intervals between windows and nodes.
+
+We wrote `check_independent.py` without access to the first checker, and it shares no code with the first checker. We
+wrote it from an earlier formulation of Lemma 2.2 and from the format description, which also gives the closed forms of
+Lemma 3.1 and the tail bounds of the first checker. `check_independent.py` uses 128-bit balls (192 bits for the energy),
+evaluates the potential piece by piece, and bounds F by second-order Taylor expansions at the midpoints of intervals.
+Its enclosure of the energy I(ρ) agrees with that of `check_certificate.py` to more than 35 digits.
+
+On a 96-thread x86-64 server, `check_certificate.py` took 474 seconds with 64 processes and `check_independent.py` took
+18 seconds with 32 processes. The second program needs fewer interval checks, 8,424 versus 28,408.
+
+Both programs rely on the certified complex root isolation of FLINT; the second also relies on FLINT returning the real
+roots with imaginary part zero and on its factorization over Z, while the first checks its brackets for the real roots
+by Sturm counts and exact signs.
+
+The output of both runs is in `logs/`, and `logs/RUNS.md` records how we produced the logs. Section 3.3 of version 3 of
+the paper (doi:10.5281/zenodo.23548807) describes both checkers step by step.
 
 `check_aux.py` makes three short exact checks that the paper refers to:
 
@@ -81,35 +92,34 @@ checker. Its output is in `logs/check_aux.log`.
 
 ## Tests
 
-The folder `tests/` contains three programs that write modified copies of the certificate (49 files in all) and a driver
-that runs both checkers on each copy:
+The folder `tests/` contains three programs that write modified copies of the certificate, 49 files in all, and a driver
+that runs both checkers on each copy. Some copies carry a field `audit_note`, which the checkers do not read; apart from
+this field they are thirty-nine different certificates. The driver is run as follows:
 
-    tests/run_all.sh python3 generate
-    tests/run_all.sh python3 first NPROC
-    tests/run_all.sh python3 second NPROC
+    bash tests/run_all.sh python3 generate
+    bash tests/run_all.sh python3 first NPROC
+    bash tests/run_all.sh python3 second NPROC
 
 The first command writes the modified certificates to `tests/work/` and checks them against
 `tests/expected_outputs.sha256`. The other two write one log per check to `tests/logs/first/` and `tests/logs/second/`.
-Running the driver replaces the logs in this repository. We produced those logs with the same command for each file,
-several files at a time, so their run times are not comparable with each other. The modifications include raising m₀ by
-10⁻⁵, 4·10⁻⁶, 3.1·10⁻⁶ and 2·10⁻⁶; multiplying G by 0.99, 0.9999, 1.0001 and 1.01; multiplying the weight of x by 1.001;
-setting the weight of each polynomial to zero in turn; replacing x² − 3x + 1 by x² − 3x + 2; weights with Σ_j c_j deg
-Q_j + 2s = 1 and = 1 − 10⁻³⁰; an extra polynomial x¹⁰⁰ − 3 with weight 1/200, which violates the degree condition; and
-invalid data (a negative G_k, G_N ≠ 0, two nodes swapped). Both checkers accept the certificate with m₀ raised by
-2·10⁻⁶, which is below the margin 3·10⁻⁶ of the certificate. They also accept the certificates in which the weight of
-Q_3 (4.1·10⁻⁷) or of Q_18 (5.3·10⁻⁸) is set to zero. `check_independent.py` also accepts the certificate whose cut point
-x_lo lies inside the support of G, because it chooses its own cut points. All other modified certificates are rejected
-by both. `tests/logs/summary.txt` lists the outcome of every check. The checkers do not read the field `audit_note` that
-some test files carry; apart from this field, the 49 files are the thirty-nine different certificates counted in the
-paper.
+Running the driver replaces the logs in this repository. Run times in these logs are not comparable with each other,
+because we produced them several files at a time, with the same command for each file. The modifications include raising
+m₀ by 10⁻⁵, 4·10⁻⁶, 3.1·10⁻⁶ and 2·10⁻⁶ and multiplying G by 0.99, 0.9999, 1.0001 and 1.01. They also include
+multiplying the weight of x by 1.001, setting the weight of each polynomial to zero in turn, replacing x² − 3x + 1 by x²
+− 3x + 2, weights with Σ_j c_j deg Q_j + 2s = 1 and = 1 − 10⁻³⁰, and an extra polynomial x¹⁰⁰ − 3 with weight 1/200,
+which violates the degree condition. Finally, they include invalid data (a negative G_k, G_N ≠ 0, two nodes swapped).
+Both checkers accept the certificate with m₀ raised by 2·10⁻⁶, which is below the margin 3·10⁻⁶ of the certificate. They
+also accept the certificates in which the weight of Q_3 (4.1·10⁻⁷) or of Q_18 (5.3·10⁻⁸) is set to zero.
+`check_independent.py` also accepts the certificate whose cut point x_lo lies inside the support of G, because it
+chooses its own cut points. All other modified certificates are rejected by both. `tests/logs/summary.txt` lists the
+outcome of every check.
 
 ## Search programs
 
 The programs in `search/` produced the certificate. They are not part of the proof, and the checkers do not use them.
 They need Python 3 with `numpy`, `scipy`, `python-flint`, and `cvxpy` with the solver `clarabel` (used with Python 3.12,
 numpy 2.5.4, scipy 1.18.1, cvxpy 1.9.3 and clarabel 0.11.1). The programs read `search/data/` and write to
-`search/scratch/`. The only change from the programs we ran is in their paths, which now point to the directory of the
-script.
+`search/scratch/`.
 
 `data/F29.json` lists the thirty polynomials of the linear program: x, the twenty-seven polynomials of Table 1 of
 Flammang's paper as reciprocal polynomials x^d U_j(x + 1/x − 2), the quartic x⁴ − 8x³ + 14x² − 7x + 1 and the cubic x³ −
@@ -145,21 +155,21 @@ programs take the output file as an argument, and the other steps take another t
 steps and the export step reproduce the shipped `scratch/nodes_a3.npy`, `scratch/nodes_a5.npy` and
 `certificate/tp_certificate.json` byte for byte. The steps that solve the convex program and the linear program are
 numerical and may differ in the last digits. `tp_dual_fixedN_par.py` evaluates log|Q| by Horner's rule in double
-precision, which is inaccurate for the polynomials of degree 32 to 38 near x = 1.95 (Section 5 of the paper). This
+precision, which is inaccurate for the polynomials of degree 32 to 38 near x = 1.95 (Appendix A of the paper). This
 affects only how close the weights are to optimal, since the checkers verify the certificate as it stands.
 
 `enum_tp.py DMAX R TFAC OUT.json [DMIN]` lists the monic irreducible polynomials of degree DMIN to DMAX with all roots
 in [0, R] and trace at most TFAC times the degree, and `tp_screen_par.py PRIMAL.npy OUT.json LIST.json ...` computes ∫
-log|Q| dθ for the measure θ saved in PRIMAL.npy and every polynomial Q of the lists. The screens of Section 5 of the
+log|Q| dθ for the measure θ saved in PRIMAL.npy and every polynomial Q of the lists. The screens of Appendix A of the
 paper used `enum_tp.py` with (DMAX, R, TFAC) = (5, 10, 3), (6, 10, 2.2) and (7, 10, 2.2), the last two with DMIN = DMAX.
 For degree 8 they used its parallel version, `enum_tp_par.py 8 10 2.2 OUT.json NPROC 4`. The four lists contain 246,207
 polynomials in all. `tp_dual_rootprod.py` is `tp_dual_fixedN_par.py` with log|Q| computed from the roots of Q. `tpc.py`
 and `tpsets.py` hold shared numerics and the polynomial sets. `data/F35.json` is F29 with the six further irreducible
-factors of Section 5 of the paper.
+factors of Appendix A of the paper.
 
-## Section 5 computations
+## Appendix A computations
 
-The folder `analysis/` holds the programs behind the other numbers of Section 5 of the paper, with their output in
+The folder `analysis/` holds the programs behind the other numbers of Appendix A of the paper, with their output in
 `analysis/out/`. Like the search programs, they are not part of the proof. From the root of the repository:
 
     python3 -I analysis/lp_roots.py analysis/data/polys_table1.json
@@ -170,9 +180,9 @@ The folder `analysis/` holds the programs behind the other numbers of Section 5 
 
 The first two commands give the linear programs without the energy term, for the nineteen polynomials of Table 1 and for
 x together with the twenty-seven polynomials of Flammang's table. The last two give the minimum of her auxiliary
-function, with the printed weights and with the weight of U_23 read as 0.000001784 (then c_0 = 0.1974399320). The
-outputs are `lp_noenergy_table1.out`,
-`lp_noenergy_x_and_27.out`, `flammang_printed_weights.out` and `flammang_c23_read_as_1.784e-6.out`.
+function, with the printed weights and with the weight of U_23 read as 0.000001784 (then c_0 = 0.1974399320),
+respectively. The outputs are `lp_noenergy_table1.out`, `lp_noenergy_x_and_27.out`, `flammang_printed_weights.out` and
+`flammang_c23_read_as_1.784e-6.out`.
 
     python3 -I analysis/lp_energy_roots.py certificate/tp_certificate.json search/data/F29.json roots \
         2.8781306519508358577886530862e-11
@@ -183,9 +193,9 @@ solves the linear program with the reference measure of the certificate and log|
 
     python3 -I analysis/exact_screen.py certificate/tp_certificate.json search/data/F29.json OUT.json 8 LIST.json ...
 
-computes ∫ log|Q| dν for the reference measure ν of the certificate from Lemma 3.1 of the paper, evaluated at the roots
-of Q. It does this for the polynomials of the set and for the lists that `enum_tp.py` and `enum_tp_par.py` write with
-the parameters given above. The output is `exact_screen.out`.
+computes ∫ log|Q| dν for the reference measure ν of the certificate by evaluating Lemma 3.1 of the paper at the roots of
+Q. It does this for the polynomials of the set and for the lists that `enum_tp.py` and `enum_tp_par.py` write with the
+parameters given above. The output is `exact_screen.out`.
 
     python3 -I -B analysis/cmp_screen.py certificate/tp_certificate.json \
         analysis/data/screen_d8_lowest2000.json
@@ -223,12 +233,15 @@ def CorRealOmega : Prop :=
 ```
 
 Here `IsMinpolyZ P α` says that P is irreducible in ℤ[X], has positive degree and vanishes at α; `AllRootsPos P` and
-`AllRootsReal P` say that all complex roots of P are real and positive, or real; `toC P` is P with complex
+`AllRootsReal P` say that all complex roots of P are real and positive, or real, respectively; `toC P` is P with complex
 coefficients; `TPLow B` is the set of totally positive α with log M(P)/deg P ≤ B, and `TRLow B` the same for totally
 real β; `Lplus` is the set of the values M(P)^(1/deg P) for totally positive algebraic integers; and `m0` is m₀ above.
-`CorReal` is Corollary 1.2: for every ε > 0, all but finitely many totally real algebraic numbers β satisfy
-log Ω(β) > m₀/2 − ε; `CorRealDec` and `CorRealOmega` are its decimal forms. The proofs use no hypotheses: the
-smoothing and energy step of Lemma 2.2 and the closed forms of Lemma 3.1 are proved.
+`CorReal` is Corollary 1.2: for every ε > 0, all but finitely many totally real algebraic numbers β satisfy log Ω(β) >
+m₀/2 − ε; `CorRealDec` and `CorRealOmega` are its decimal forms. The smoothing and energy step of Lemma 2.2 and the
+closed forms of Lemma 3.1 are proved. The theorems of `FinalN.lean`, `FinalK.lean` and `Assembly.lean` take this step as
+a named hypothesis, `EnergySmoothing`, described in the comments in `AuxCommon/Basic.lean`, `TPMahler/FinalN.lean` and
+`TPMahler/Assembly.lean`. `AuxCommon/EnergyProof.lean` proves it, so the proofs use no hypotheses and the final theorems
+have none.
 
 The computations of the proof are done in two ways, and each has its own theorems:
 `TPMahler.N.tpMain : TpMain`, `N.tpOmega`, `N.tpLimitPoint` and `N.expM0Gt` in `lean/TPMahler/UncondN.lean`, with the
@@ -249,38 +262,33 @@ lake env lean ../logs/lean/controls.lean            # negative controls, after t
 
 The second build needs about 7 GB of memory for its largest module, and Lake runs as many modules in parallel as the
 machine has threads. A plain `lake build` builds both versions. The builds print warnings about deprecated names, from
-linters, and about an exponent above Lean's threshold for evaluation; they are harmless. `logs/lean/` holds the output
-of these commands on the files of `lean/`, on a fresh machine: `build_N.log`, `build_K.log`, `axioms_N.out`,
+linters, and about an exponent above Lean's threshold for evaluation. These warnings are harmless. `logs/lean/` holds
+the output of these commands on the files of `lean/`, on a fresh machine: `build_N.log`, `build_K.log`, `axioms_N.out`,
 `axioms_K.out` and `controls.out`. The axiom files check that the type of each theorem is the statement proposition of
 the same name.
 
 A checking program in core Lean (`lean/TPCore/`, with the integer logarithm in `lean/AuxCore/`) verifies the inequality
 of the certificate on 8,815 intervals that tile [2^-30, 21], the two tails, a lower bound for the energy and the
-condition on the weights, and `lean/TPMahler/` and `lean/AuxCommon/` prove that its acceptance implies the theorems.
-In the build of `UncondN.lean` the checks are evaluated by `native_decide`, which executes compiled code, so the
-trusted base includes the Lean compiler, the C compiler that it uses and the Lean runtime. `#print axioms` gives, for
-`N.tpMain`, `N.tpOmega` and `N.tpLimitPoint`, the standard axioms `propext`, `Classical.choice` and `Quot.sound` plus
-47 axioms `TPCore.TPN.….native_decide.ax_1_1`, one for each check: the 43 blocks of intervals in
-`lean/TPN/Chunk000.lean` to `Chunk042.lean`, and the energy, the weights and the two tails in `lean/TPN/Globals.lean`,
-which also holds a fifth check, `data_ok`, that the theorems do not use. In the second version each interval has its
-own module (`lean/TPK/Leaf*.lean`); `lean/TPMahler/LKB*.lean` groups them into blocks, and `lean/TPMahler/FinalK.lean`
-checks their chaining and their number. The energy bound is split into 19,445 parts in 649 modules
-(`lean/TPK/Echk*.lean`, grouped by `lean/TPMahler/EKR*.lean`), and `lean/TPK/Glob.lean` holds the checks of the weights
-and of the two tails. The seven theorems of this version, and `N.expM0Gt`, use the standard axioms only.
+condition on the weights. `lean/TPMahler/` and `lean/AuxCommon/` prove that its acceptance implies the theorems. In the
+build of `UncondN.lean` the checks are evaluated by `native_decide`, which executes compiled code, so the trusted base
+includes the Lean compiler, the C compiler that it uses and the Lean runtime. `#print axioms` gives, for `N.tpMain`,
+`N.tpOmega` and `N.tpLimitPoint`, the standard axioms `propext`, `Classical.choice` and `Quot.sound` plus 47 axioms
+`TPCore.TPN.….native_decide.ax_1_1`, one for each check: the 43 blocks of intervals in `lean/TPN/Chunk000.lean` to
+`Chunk042.lean`, and the energy, the weights and the two tails in `lean/TPN/Globals.lean`. `N.expM0Gt` uses the standard
+axioms only. In the second version each interval has its own module (`lean/TPK/Leaf*.lean`); `lean/TPMahler/LKB*.lean`
+groups them into blocks, and `lean/TPMahler/FinalK.lean` checks their chaining and their number. The energy bound is
+split into 19,445 parts in 649 modules (`lean/TPK/Echk*.lean`, grouped by `lean/TPMahler/EKR*.lean`), and
+`lean/TPK/Glob.lean` holds the checks of the weights and of the two tails. The seven theorems of this version use the
+standard axioms only.
 
-`lean/` is a subset of the Lean project in which the proof was written and checked. It holds the files of the builds
-above and the root modules of the two core libraries. The scripts that wrote the generated files are not included,
-because they depend on the layout of that project. None of the generated files needs to be trusted: the statements do
-not refer to them, and Lean checks them. `lean/` differs from the project only in comments and in `lakefile.toml`,
-which declares the libraries of this subset. `lean/SHA256SUMS` lists the SHA-256 of the files of `lean/`.
-*Notes on the Lean files* below describes the changes to the comments and the comments that are out of date.
-
-## Notes on the Lean files
-
-Internal paths and some internal labels were removed from the comments in `lean/`; otherwise the comments are those
-of the project. The headers of some generated files name the scripts that wrote them, and `lakefile.toml` also
-declares some benchmark executables whose files are not included; they are not default targets. Some comments use
-names from earlier stages of the project:
+The shipped subset. `lean/` is a subset of the Lean project in which the proof was written and checked. It holds the
+files of the builds above and the root modules of the two core libraries. The scripts that wrote the generated files are
+not included, because they depend on the layout of that project. None of the generated files needs to be trusted: the
+statements do not refer to them, and Lean checks them. `lean/` differs from the project only in comments and in
+`lakefile.toml`. Internal paths and some internal labels were removed from the comments. `lakefile.toml` declares the
+libraries of this subset and some benchmark executables; the executables are not default targets, and their files are
+not included. `lean/SHA256SUMS` lists the SHA-256 of the files of `lean/`. Some comments use names from earlier stages
+of the project:
 
 | name in the comments | name or place in the shipped files | comments in |
 |---|---|---|
@@ -291,10 +299,14 @@ names from earlier stages of the project:
 | `TPMahler.EnergyK`, for the check of the literals | `TPK/ELitEq.lean` | `TPK/ELit.lean` |
 | the certificate "a5", `cert_tp_a5_9f1e5115.json`, and its intervals `leaves_a5.json` | `certificate/tp_certificate.json`; the intervals are in `TPCore/Leaves.lean` | `lakefile.toml`, `TPCore/Data.lean`, `TPCore/Leaves.lean` |
 
-`AuxCommon/Basic.lean`, `TPMahler/FinalN.lean` and `TPMahler/Assembly.lean` describe `EnergySmoothing` as a named
-hypothesis, which it is for the theorems of `FinalN.lean`, `FinalK.lean` and `Assembly.lean`; it is proved in
-`AuxCommon/EnergyProof.lean`, and the final theorems have no hypotheses. Comments in `AuxCommon/` refer to "both papers"
-and "the two auxiliary-function bounds", because these files are shared with other work.
+Further checks. On other machines, we rebuilt the development version of the Lean files from its sources; that version
+yields the same declarations. We checked every declaration on which the theorems of the second version depend with
+`leanchecker`, which runs Lean's kernel, and with two further implementations of the Lean kernel, nanoda and lean4lean.
+We checked the theorems of 9,464 of the modules with computations (one for each interval and 649 for the energy) in
+batches. We checked the rest of the proof, including the remaining computations, with these theorems as axioms. To
+confirm that the checks can fail, we ran them on modified inputs (`logs/lean/controls.lean`, output
+`logs/lean/controls.out`): they reject the first interval of the tiling extended to [2^-30, 1], the last interval
+checked against an end point moved by 10^-10 · 2^-64, and the left tail taken to be (0, 1/2].
 
 ## Repository layout
 
@@ -303,11 +315,15 @@ and "the two auxiliary-function bounds", because these files are shared with oth
 - `logs/`: the output of the three programs on the certificate.
 - `tests/`: the programs that write the modified certificates, their expected SHA-256, the driver, and the logs.
 - `search/`: the programs that produced the certificate, with their input data.
-- `analysis/`: the programs and outputs behind the other numbers of Section 5 of the paper.
+- `analysis/`: the programs and outputs behind the other numbers of Appendix A of the paper.
 - `lean/`: the Lean proof (see *Lean proof*), with its own `SHA256SUMS`.
 - `logs/lean/`: the output of the Lean builds, the files that print the statements and axioms, and negative controls.
 - `paper/`: LaTeX source of the paper.
 - `SHA256SUMS`: SHA-256 of all other files.
+
+## Versions
+
+- Version 4: the text of the paper was revised, with a closing section on open problems and an appendix for the search; this README gained the paragraph *Further checks*. The certificate, the programs, the tests and the Lean files are those of version 3 (doi:10.5281/zenodo.23548808).
 
 ## License
 

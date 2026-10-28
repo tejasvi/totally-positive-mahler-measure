@@ -9,8 +9,9 @@ authors:
 license:
   - Apache-2.0
   - CC-BY-4.0
-repository-code: "https://github.com/tejasvi/totally-positive-mahler-measure-v3"
-doi: 10.5281/zenodo.23548808
+version: "4"
+repository-code: "https://github.com/tejasvi/totally-positive-mahler-measure/tree/v4"
+doi: 10.5281/zenodo.23715959
 preferred-citation:
   type: article
   title: "A lower bound for the smallest limit point of the absolute Mahler measure of totally positive algebraic integers"
@@ -18,5 +19,5 @@ preferred-citation:
     - family-names: Tomar
       given-names: Tejasvi Singh
       orcid: "https://orcid.org/0000-0003-4668-3639"
-  doi: 10.5281/zenodo.23548807
+  doi: 10.5281/zenodo.23715956
   year: 2026
